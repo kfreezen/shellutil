@@ -17,6 +17,6 @@ setup(
     packages=find_namespace_packages(include=["shellutil"]),
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
-    install_requires=["paramiko", "ptyprocess"],
+    install_requires=["paramiko", "ptyprocess", "pyte"],
     test_suite="tests",
 )
