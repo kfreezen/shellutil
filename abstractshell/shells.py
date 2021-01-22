@@ -6,8 +6,6 @@ from typing import Tuple
 from abstractshell.ssh import WrappedSSHClient
 from abstractshell.shell_expect import PtyShellExpect, RemotePtyShellExpect
 
-from abstractshell.info_store import info_store
-
 import logging
 import ptyprocess
 from pexpect.utils import split_command_line
