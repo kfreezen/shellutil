@@ -183,25 +183,11 @@ class RemoteShell(Shell):
         return self.client.password
 
     @staticmethod
-    def establish_connection(remote_server, creds=None, ssh_keyfile=None):
-        if creds is None:
-            creds = info_store.creds(server_ip=remote_server)
-
-        creds_resolver = creds
-
-        (username, password) = creds_resolver.resolve()
-
+    def establish_connection(remote_server, username, password, ssh_keyfile=None):
         is_ssh_valid = False
         r_client = None
 
         while not is_ssh_valid:
-            if username is None or password is None:
-                creds = creds_resolver.resolve()
-
-                if creds is None:
-                    return None
-
-                (username, password) = creds
             if username is None or password is None:
                 return None
 
@@ -210,10 +196,7 @@ class RemoteShell(Shell):
                 is_ssh_valid = True
             else:
                 logger.error("SSH INVALID")
-                username = None
-                password = None
-
-                creds_resolver.mark_invalid()
+                return None
 
         rsh = RemoteShell(r_client, ssh_keyfile=ssh_keyfile)
         return rsh
