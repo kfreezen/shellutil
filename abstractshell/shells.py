@@ -3,10 +3,10 @@ import os
 
 from typing import Tuple
 
-from shellutil.ssh import WrappedSSHClient
-from shellutil.shell_expect import PtyShellExpect, RemotePtyShellExpect
+from abstractshell.ssh import WrappedSSHClient
+from abstractshell.shell_expect import PtyShellExpect, RemotePtyShellExpect
 
-from shellutil.info_store import info_store
+from abstractshell.info_store import info_store
 
 import logging
 import ptyprocess

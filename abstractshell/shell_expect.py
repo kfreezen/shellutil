@@ -9,7 +9,7 @@ import time
 import socket
 
 import pyte
-from shellutil.pty_screen import TextBufferScreen
+from abstractshell.pty_screen import TextBufferScreen
 
 
 class SpecialConstants(Enum):
