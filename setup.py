@@ -9,12 +9,12 @@ with open(
     long_description = file.read()
 
 setup(
-    name="shellutil",
+    name="abstractshell",
     url="https://github.com/kfreezen/shellutil",
     long_description=long_description,
     long_description_content_type="text/markdown",
     description="Utilities to handle shell access to both local and remote shells.",
-    packages=find_namespace_packages(include=["shellutil"]),
+    packages=find_namespace_packages(include=["abstractshell"]),
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     install_requires=["paramiko", "ptyprocess", "pyte"],
