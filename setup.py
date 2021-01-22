@@ -14,7 +14,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     description="Utilities to handle shell access to both local and remote shells.",
-    packages=find_namespace_packages(include=["abstractshell"]),
+    packages=[
+        "abstractshell",
+        "abstractshell/ssh",
+    ],
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     install_requires=["paramiko", "ptyprocess", "pyte"],
