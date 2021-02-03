@@ -109,7 +109,7 @@ class Shell:
             return None
 
     def path_exists(self, path):
-        exists_status = self.exec(f"ls -1 {path}")
+        exists_status = self.exec_statusonly(f"ls -1 {path}")
         return exists_status == 0
 
 
