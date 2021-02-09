@@ -99,6 +99,15 @@ class Shell:
 
         return stdout.wait_exit_status()
 
+    def dirsize(self, path):
+        (_i, out, err) = self.exec(f"du -sk {path}")
+
+        for line in out.readlines():
+            match = self._du_line.match(line.decode())
+            groups = match.groups()
+            return int(groups[0]) * 1024
+        return None
+
     def filesize(self, path):
         cmd = f'stat "{path}" -c "%s"'
         (_i, stdout, _e) = self.exec(cmd)
