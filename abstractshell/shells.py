@@ -62,7 +62,7 @@ class RemoteShellIO(ShellIO):
 class Shell:
     # FIXME: requires_sudo may not be necessary.
     # FIXME: ssh_keyfile may be redundant, or not a good plan.
-    def __init__(self, remote=False, ssh_keyfile=None, requires_sudo=False):
+    def __init__(self, remote=False, ssh_keyfile=None, requires_sudo=True):
         """
         ssh_keyfile: The private key file that this shell should use for authentication.
         """
@@ -70,6 +70,8 @@ class Shell:
         self.remote = remote
         self.ssh_keyfile = ssh_keyfile
         self.requires_sudo = requires_sudo
+
+        self._id_ctx = None
 
     def id(self):
         (_i, out, _err) = self.exec("id")
@@ -95,11 +97,17 @@ class Shell:
             "exec not implemented in abstract Shell class, should have instantiated LocalShell or RemoteShell"
         )
 
-    def _sudo_exec(self, command: str) -> Tuple[ShellIO, ShellIO, ShellIO]:
-        if self.requires_sudo:
-            if not command.startswith("sudo"):
-                command = "sudo " + command
-        return self.exec(command)
+    def _sudoify(self, command: str):
+        if not self._id_ctx:
+            self._id_ctx = self.id()
+        if not self._id_ctx:
+            return command
+
+        if self.requires_sudo and self._id_ctx["uid"][0] != 0:
+            if command.startswith("sudo"):
+                return command
+            return "sudo " + command
+        return command
 
     def mkdir(self, path):
         (_stdin, stdout, stderr) = self._sudo_exec(f"mkdir -p {path}")
@@ -138,12 +146,14 @@ class Shell:
 
 
 class LocalShell(Shell):
-    def __init__(self, ssh_keyfile=None, requires_sudo=False):
+    def __init__(self, ssh_keyfile=None, requires_sudo=True):
         super().__init__(
             remote=False, ssh_keyfile=ssh_keyfile, requires_sudo=requires_sudo
         )
 
     def exec(self, command: str) -> Tuple[ShellIO, ShellIO, ShellIO]:
+        command = self._sudoify(command)
+
         proc = subprocess.Popen(
             command,
             shell=True,
@@ -178,13 +188,15 @@ class LocalShell(Shell):
 
 
 class RemoteShell(Shell):
-    def __init__(self, client: WrappedSSHClient, ssh_keyfile=None, requires_sudo=False):
+    def __init__(self, client: WrappedSSHClient, ssh_keyfile=None, requires_sudo=True):
         super().__init__(
             remote=True, ssh_keyfile=ssh_keyfile, requires_sudo=requires_sudo
         )
         self.client = client
 
     def exec(self, command: str) -> Tuple[ShellIO, ShellIO, ShellIO]:
+        command = self._sudoify(command)
+
         stdin, stdout, stderr = self.client.exec_command(command)
         return (RemoteShellIO(stdin), RemoteShellIO(stdout), RemoteShellIO(stderr))
 
