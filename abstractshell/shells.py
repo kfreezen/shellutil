@@ -74,7 +74,8 @@ class Shell:
         self._id_ctx = None
 
     def id(self):
-        (_i, out, _err) = self.exec("id")
+        # requires_sudo here prevents a not-very-clear stack overflow from happening.
+        (_i, out, _err) = self.exec("id", requires_sudo=False)
         ctx = id_cmd.id_parse(out)
         return ctx
 
@@ -97,13 +98,13 @@ class Shell:
             "exec not implemented in abstract Shell class, should have instantiated LocalShell or RemoteShell"
         )
 
-    def _sudoify(self, command: str):
+    def _sudoify(self, command: str, force_sudo=False):
         if not self._id_ctx:
             self._id_ctx = self.id()
         if not self._id_ctx:
             return command
 
-        if self.requires_sudo and self._id_ctx["uid"][0] != 0:
+        if self.force_sudo or (self.requires_sudo and self._id_ctx["uid"][0] != 0):
             if command.startswith("sudo"):
                 return command
             return "sudo " + command
@@ -151,8 +152,15 @@ class LocalShell(Shell):
             remote=False, ssh_keyfile=ssh_keyfile, requires_sudo=requires_sudo
         )
 
-    def exec(self, command: str) -> Tuple[ShellIO, ShellIO, ShellIO]:
-        command = self._sudoify(command)
+    def exec(
+        self, command: str, requires_sudo=None
+    ) -> Tuple[ShellIO, ShellIO, ShellIO]:
+        if requires_sudo is False:
+            pass
+        elif requires_sudo is True:
+            command = self._sudoify(command, force_sudo=True)
+        elif requires_sudo is None:
+            command = self._sudoify(command)
 
         proc = subprocess.Popen(
             command,
@@ -194,8 +202,15 @@ class RemoteShell(Shell):
         )
         self.client = client
 
-    def exec(self, command: str) -> Tuple[ShellIO, ShellIO, ShellIO]:
-        command = self._sudoify(command)
+    def exec(
+        self, command: str, requires_sudo=None
+    ) -> Tuple[ShellIO, ShellIO, ShellIO]:
+        if requires_sudo is False:
+            pass
+        elif requires_sudo is True:
+            command = self._sudoify(command, force_sudo=True)
+        elif requires_sudo is None:
+            command = self._sudoify(command)
 
         stdin, stdout, stderr = self.client.exec_command(command)
         return (RemoteShellIO(stdin), RemoteShellIO(stdout), RemoteShellIO(stderr))
