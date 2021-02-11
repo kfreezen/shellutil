@@ -42,7 +42,7 @@ class LineIterator:
     def next_line(self, match_re=None):
         while not self.buffer:
             buf = self.interaction._read_pty()
-            if buf is SpecialConstants.EOF:
+            if buf is SpecialConstants.EOF and not self.buffer:
                 return SpecialConstants.EOF
 
             self.buffer += buf
@@ -232,7 +232,7 @@ class PtyShellExpect:
         return text
 
     def expect(self, regex, echo=True, printfn=None):
-        (res, i) = self.expect_match(regex, echo, printfn)
+        (res, i) = self.expect_match(regex, echo, printfn) or (None, None)
         return i
 
     def expect_match(self, regex, echo=True, printfn=None):
