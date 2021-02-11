@@ -76,7 +76,7 @@ class Shell:
     def id(self):
         # requires_sudo here prevents a not-very-clear stack overflow from happening.
         (_i, out, _err) = self.exec("id", requires_sudo=False)
-        ctx = id_cmd.id_parse(out)
+        ctx = id_cmd.id_parse(out.read().decode())
         return ctx
 
     def chmod(self, perms: int, path):
