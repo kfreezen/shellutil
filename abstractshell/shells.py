@@ -111,7 +111,7 @@ class Shell:
         return command
 
     def mkdir(self, path):
-        (_stdin, stdout, stderr) = self._sudo_exec(f"mkdir -p {path}")
+        (_stdin, stdout, stderr) = self.exec(f"mkdir -p {path}")
         logger.info(
             f"mkdir -p {path}: <%s> <%s>",
             stdout.read().decode(),
@@ -121,7 +121,7 @@ class Shell:
         return stdout.wait_exit_status()
 
     def dirsize(self, path):
-        (_i, out, err) = self._sudo_exec(f"du -sk {path}")
+        (_i, out, err) = self.exec(f"du -sk {path}")
 
         for line in out.readlines():
             match = self._du_line.match(line.decode())
@@ -131,7 +131,7 @@ class Shell:
 
     def filesize(self, path):
         cmd = f'stat "{path}" -c "%s"'
-        (_i, stdout, _e) = self._sudo_exec(cmd)
+        (_i, stdout, _e) = self.exec(cmd)
         size_str = stdout.read().decode()
         try:
             return int(size_str)
