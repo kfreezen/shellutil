@@ -71,11 +71,10 @@ class Shell:
         self.ssh_keyfile = ssh_keyfile
         self.requires_sudo = requires_sudo
 
-    _id_parse = re.compile(r"(\w+)\=(\d+)\(([^\)]*)\)")
-
     def id(self):
         (_i, out, _err) = self.exec("id")
-        return id_cmd.parse_id_string(out)
+        ctx = id_cmd.id_parse(out)
+        return ctx
 
     def chmod(self, perms: int, path):
         if isinstance(perms, int):
