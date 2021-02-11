@@ -5,6 +5,7 @@ from typing import Tuple
 
 from abstractshell.ssh import WrappedSSHClient
 from abstractshell.shell_expect import PtyShellExpect, RemotePtyShellExpect
+from abstractshell import id as id_cmd
 
 import logging
 import ptyprocess
@@ -70,6 +71,12 @@ class Shell:
         self.ssh_keyfile = ssh_keyfile
         self.requires_sudo = requires_sudo
 
+    _id_parse = re.compile(r"(\w+)\=(\d+)\(([^\)]*)\)")
+
+    def id(self):
+        (_i, out, _err) = self.exec("id")
+        return id_cmd.parse_id_string(out)
+
     def chmod(self, perms: int, path):
         if isinstance(perms, int):
             perms = oct(perms)[2:]
@@ -89,8 +96,14 @@ class Shell:
             "exec not implemented in abstract Shell class, should have instantiated LocalShell or RemoteShell"
         )
 
+    def _sudo_exec(self, command: str) -> Tuple[ShellIO, ShellIO, ShellIO]:
+        if self.requires_sudo:
+            if not command.startswith("sudo"):
+                command = "sudo " + command
+        return self.exec(command)
+
     def mkdir(self, path):
-        (_stdin, stdout, stderr) = self.exec(f"sudo mkdir -p {path}")
+        (_stdin, stdout, stderr) = self._sudo_exec(f"mkdir -p {path}")
         logger.info(
             f"mkdir -p {path}: <%s> <%s>",
             stdout.read().decode(),
@@ -100,7 +113,7 @@ class Shell:
         return stdout.wait_exit_status()
 
     def dirsize(self, path):
-        (_i, out, err) = self.exec(f"du -sk {path}")
+        (_i, out, err) = self._sudo_exec(f"du -sk {path}")
 
         for line in out.readlines():
             match = self._du_line.match(line.decode())
@@ -110,7 +123,7 @@ class Shell:
 
     def filesize(self, path):
         cmd = f'stat "{path}" -c "%s"'
-        (_i, stdout, _e) = self.exec(cmd)
+        (_i, stdout, _e) = self._sudo_exec(cmd)
         size_str = stdout.read().decode()
         try:
             return int(size_str)
@@ -118,7 +131,10 @@ class Shell:
             return None
 
     def path_exists(self, path):
-        exists_status = self.exec_statusonly(f"ls -1 {path}")
+        cmd = f"ls -1 {path}"
+        if self.requires_sudo:
+            cmd = "sudo " + cmd
+        exists_status = self.exec_statusonly(cmd)
         return exists_status == 0
 
 
