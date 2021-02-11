@@ -45,7 +45,8 @@ class LineIterator:
             if buf is SpecialConstants.EOF and not self.buffer:
                 return SpecialConstants.EOF
 
-            self.buffer += buf
+            if not isinstance(buf, SpecialConstants):
+                self.buffer += buf
             if not self.buffer:
                 return SpecialConstants.NO_LINE
         found_match = None
