@@ -104,7 +104,7 @@ class Shell:
         if not self._id_ctx:
             return command
 
-        if self.force_sudo or (self.requires_sudo and self._id_ctx["uid"][0] != 0):
+        if force_sudo or (self.requires_sudo and self._id_ctx["uid"][0] != 0):
             if command.startswith("sudo"):
                 return command
             return "sudo " + command
