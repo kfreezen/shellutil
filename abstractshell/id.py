@@ -14,7 +14,7 @@ def id_parse(out):
         return None
 
     uid, user, gid, group, groups = match.groups()
-    ctx = {"uid": (uid, user), "gid": (gid, group), "groups": []}
+    ctx = {"uid": (int(uid), user), "gid": (int(gid), group), "groups": []}
 
     groups = groups.split(",")
     for group in groups:
@@ -23,5 +23,5 @@ def id_parse(out):
             continue
 
         gid, group = match.groups()
-        ctx["groups"].append((gid, group))
+        ctx["groups"].append((int(gid), group))
     return ctx
