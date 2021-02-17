@@ -41,6 +41,17 @@ class LineIterator:
     def __next__(self):
         return self.next_line()
 
+    def exhaust_buffer(self):
+        buf = self.interaction._read_pty()
+        if buf is SpecialConstants.EOF:
+            buf = self.buffer
+            self.buffer = ""
+            return buf or SpecialConstants.EOF
+        buf = self.buffer + buf
+        self.buffer = ""
+
+        return buf
+
     def next_line(self, match_re=None):
         while not self.buffer:
             buf = self.interaction._read_pty()
@@ -191,6 +202,8 @@ class PtyShellExpect:
         return not self.ptyproc.eof()
 
     def send(self, line, lf=b"\n"):
+        self.line_itr.exhaust_buffer()
+
         if isinstance(line, str):
             line = line.encode()
         if isinstance(lf, str):
