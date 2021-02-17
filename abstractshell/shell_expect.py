@@ -1,5 +1,7 @@
 import re
 
+from typing import Iterable
+
 from enum import Enum
 from collections.abc import Iterable
 import ptyprocess
@@ -240,7 +242,7 @@ class PtyShellExpect:
         if not printfn:
             printfn = self._default_print
 
-        if isinstance(regex, str):
+        if not isinstance(regex, Iterable) or isinstance(regex, str):
             regex = [regex]
 
         for (i, r) in enumerate(regex):
