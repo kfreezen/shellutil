@@ -21,7 +21,7 @@ class SpecialConstants(Enum):
 
 
 EOF = SpecialConstants.EOF
-PROMPT = r"\(.*\)\s+\[.*\][\$\#]\s+"
+PROMPT = r"(\(.*\)\s+)?\[.*\][\$\#]\s+"
 
 
 class ShellExpectEOF(Exception):
