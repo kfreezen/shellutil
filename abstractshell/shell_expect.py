@@ -1,4 +1,5 @@
 import re
+import io
 
 from typing import Iterable
 
@@ -20,7 +21,7 @@ class SpecialConstants(Enum):
 
 
 EOF = SpecialConstants.EOF
-PROMPT = r"\[.*\][\$\#]\s+"
+PROMPT = r"\(.*\)\s+\[.*\][\$\#]\s+"
 
 
 class ShellExpectEOF(Exception):
