@@ -175,6 +175,9 @@ class PtyShellExpect:
 
         while self.ptyproc.isalive():
             buf = self._read_pty_raw(0.01)
+            if buf is SpecialConstants.EOF:
+                break
+
             if len(buf) > 0:
                 self.stream.feed(buf.decode())
                 printfn(self.screen.readbuffer())
