@@ -19,7 +19,10 @@ class TextBufferScreen(pyte.Screen):
         super().__init__(80, 25)
         self.buffer = io.StringIO()
         self.title = ""
-        self.debug = debug
+        self._debug = debug
+
+    def debug(self, *args, **kwargs):
+        pass
 
     def draw(self, text, *args, **kwargs):
         self.buffer.write(text)
