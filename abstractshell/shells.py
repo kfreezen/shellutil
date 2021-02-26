@@ -32,13 +32,23 @@ class LocalShellIO(ShellIO):
     def exit_status_ready(self):
         return self.poll() is not None
 
-    def __getattr__(self, item):
+    def _io(self):
         io = getattr(self.process, self._io_attr)
-        return getattr(io, item)
+        return io
+
+    def readlines(self):
+        io = self._io()
+        for line in io.readlines():
+            if isinstance(line, bytes):
+                line = line.decode()
+
+            yield line
+
+    def __getattr__(self, item):
+        return getattr(self._io(), item)
 
     def __iter__(self):
-        io = getattr(self.process, self._io_attr)
-        return iter(io)
+        return iter(self._io())
 
 
 class RemoteShellIO(ShellIO):
