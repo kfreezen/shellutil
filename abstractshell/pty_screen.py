@@ -87,7 +87,7 @@ def generic_cursor_control(*args, **kwargs):
 
 
 def generic_fn(self, *args, **kwargs):
-    self.buffer.write("\r\n")
+    pass
 
 
 cursor_functions = [
