@@ -26,7 +26,7 @@ class TextBufferScreen(pyte.Screen):
 
     def draw(self, text, *args, **kwargs):
         self.buffer.write(text)
-        if self.debug:
+        if self._debug:
             print(f"drawing '{text}'")
 
     def readbuffer(self):
@@ -40,23 +40,23 @@ class TextBufferScreen(pyte.Screen):
             self.buffer = io.StringIO()
 
         elif how == 0:
-            if self.debug:
+            if self._debug:
                 print("ERASE LINE", args, kwargs)
         elif how == 1:
-            if self.debug:
+            if self._debug:
                 print("ERASE TO CURSOR", args, kwargs)
         else:
-            if self.debug:
+            if self._debug:
                 print("HOW NOT SUPPORT", how, args, kwargs)
 
     def carriage_return(self):
         self.buffer.write("\r")
-        if self.debug:
+        if self._debug:
             print("CR")
 
     def linefeed(self):
         self.buffer.write("\n")
-        if self.debug:
+        if self._debug:
             print("LF")
 
     def debug(self, *args, **kwargs):
@@ -64,17 +64,17 @@ class TextBufferScreen(pyte.Screen):
 
     def set_title(self, title):
         self.title = title
-        if self.debug:
+        if self._debug:
             print("set_title", title)
 
     def backspace(self):
         self.buffer.write("\b")
-        if self.debug:
+        if self._debug:
             print("backspace char")
 
     def tab(self):
         self.buffer.write("\t")
-        if self.debug:
+        if self._debug:
             print("tab char")
 
 
