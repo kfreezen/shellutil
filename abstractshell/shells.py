@@ -181,17 +181,18 @@ class LocalShell(Shell):
         return PtyShellExpect(ptyproc)
 
     def _exec_pty(
-        self, command: str, cwd=None, env=None, echo=None
+        self, command: str, cwd=None, env=None, term="vt100", echo=None
     ) -> ptyprocess.PtyProcess:
         cwd = cwd or os.getcwd()
-        env = os.environ if env is None else env
+        pty_env = env or dict(os.environ)
         echo = True if env is None else env
+
+        if not env:
+            pty_env["TERM"] = term or "vt100"
 
         argv = split_command_line(command)
 
-        ptyproc = ptyprocess.PtyProcess.spawn(
-            argv, os.getcwd(), env=os.environ, echo=True
-        )
+        ptyproc = ptyprocess.PtyProcess.spawn(argv, os.getcwd(), env=pty_env, echo=True)
         return ptyproc
 
 

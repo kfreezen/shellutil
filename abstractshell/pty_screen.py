@@ -5,6 +5,7 @@ import select
 import os
 
 from enum import Enum
+from functools import partial
 
 
 class PtyConstants(Enum):
@@ -21,7 +22,13 @@ class TextBufferScreen(pyte.Screen):
         self.title = ""
         self._debug = debug
 
+        for fn in cursor_functions:
+            setattr(self, fn, partial(generic_cursor_control, self))
+        for fn in functions:
+            setattr(self, fn, partial(generic_fn, self))
+
     def debug(self, *args, **kwargs):
+        self.buffer("\r\n")
         pass
 
     def draw(self, text, *args, **kwargs):
@@ -59,9 +66,6 @@ class TextBufferScreen(pyte.Screen):
         if self._debug:
             print("LF")
 
-    def debug(self, *args, **kwargs):
-        pass
-
     def set_title(self, title):
         self.title = title
         if self._debug:
@@ -82,8 +86,8 @@ def generic_cursor_control(*args, **kwargs):
     pass
 
 
-def generic_fn(*args, **kwargs):
-    pass
+def generic_fn(self, *args, **kwargs):
+    self.buffer.write("\r\n")
 
 
 cursor_functions = [
@@ -128,8 +132,3 @@ functions = [
     "set_alternate_keypad",
     "set_number_keypad",
 ]
-
-for fn in cursor_functions:
-    setattr(TextBufferScreen, fn, generic_cursor_control)
-for fn in functions:
-    setattr(TextBufferScreen, fn, generic_fn)
