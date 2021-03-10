@@ -99,3 +99,5 @@ class WrappedSSHClient:
                         f"SSHException occurred while trying to reconnect ssh {e}"
                     )
                 return self._retry_ssh(fn, *args, retries=retries - 1, **kwargs)
+            else:
+                raise
