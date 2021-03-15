@@ -1,7 +1,7 @@
 import re
 import io
 
-from typing import Iterable
+from typing import Union, Tuple, Iterable
 
 from enum import Enum
 from collections.abc import Iterable
@@ -255,7 +255,9 @@ class PtyShellExpect:
         (res, i) = self.expect_match(regex, echo, printfn) or (None, None)
         return i
 
-    def expect_match(self, regex, echo=True, printfn=None):
+    def expect_match(
+        self, regex, echo=True, printfn=None
+    ) -> Union[Tuple[re.compile, int], SpecialConstants]:
         if not printfn:
             printfn = self._default_print
 
