@@ -1,5 +1,6 @@
 import re
 import io
+import sys
 
 from typing import Union, Tuple, Iterable
 
@@ -164,10 +165,9 @@ class PtyShellExpect:
     def exit_status_ready(self):
         return not self.ptyproc.isalive()
 
-    def _default_print(self, *args, **kwargs):
-        if "end" not in kwargs:
-            kwargs["end"] = ""
-        print(*args, **kwargs)
+    def _default_print(self, output):
+        sys.stdout.write(output)
+        sys.stdout.flush()
 
     def wait_exit_status(self, echo=True, printfn=None):
         if not printfn:
@@ -280,7 +280,7 @@ class PtyShellExpect:
             if isinstance(res, tuple):
                 r_ex, i, line, match = res
                 if echo:
-                    printfn(line, end="")
+                    printfn(line)
 
                 if match:
                     return match, i
