@@ -358,7 +358,4 @@ class RemotePtyShellExpect(PtyShellExpect):
             if buf is SpecialConstants.EOF:
                 break
 
-        if not self.chan.exit_status_ready():
-            return -1
-
         return self.chan.recv_exit_status()
