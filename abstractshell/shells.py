@@ -83,9 +83,11 @@ class Shell:
 
         self._id_ctx = None
 
-    def id(self):
+    def id(self, user=None):
+        user = user or ""
+
         # requires_sudo here prevents a not-very-clear stack overflow from happening.
-        (_i, out, _err) = self.exec("id", requires_sudo=False)
+        (_i, out, _err) = self.exec(f"id {user}", requires_sudo=False)
         ctx = id_cmd.id_parse(out.read().decode())
         return ctx
 
