@@ -139,7 +139,7 @@ class Shell:
         (_i, out, err) = self.exec(f"du -sk {path}")
 
         for line in out.readlines():
-            match = self._du_line.match(line.decode())
+            match = self._du_line.match(line)
             groups = match.groups()
             return int(groups[0]) * 1024
         return None
