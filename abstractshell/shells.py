@@ -1,5 +1,6 @@
 import subprocess
 import os
+import re
 
 from typing import Tuple
 
@@ -70,6 +71,8 @@ class RemoteShellIO(ShellIO):
 
 
 class Shell:
+    _du_line = re.compile("(\d+)\s+(.+)")
+
     # FIXME: requires_sudo may not be necessary.
     # FIXME: ssh_keyfile may be redundant, or not a good plan.
     def __init__(self, remote=False, ssh_keyfile=None, requires_sudo=True):
