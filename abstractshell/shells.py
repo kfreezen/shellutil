@@ -86,6 +86,10 @@ class Shell:
 
         self._id_ctx = None
 
+    @property
+    def description(self):
+        raise RuntimeError("description not defined on abstract class.")
+
     def id(self, user=None):
         user = user or ""
 
@@ -167,6 +171,10 @@ class LocalShell(Shell):
             remote=False, ssh_keyfile=ssh_keyfile, requires_sudo=requires_sudo
         )
 
+    @property
+    def description(self):
+        return "local shell"
+
     def exec(
         self, command: str, requires_sudo=None
     ) -> Tuple[ShellIO, ShellIO, ShellIO]:
@@ -217,6 +225,10 @@ class RemoteShell(Shell):
             remote=True, ssh_keyfile=ssh_keyfile, requires_sudo=requires_sudo
         )
         self.client = client
+
+    @property
+    def description(self):
+        return self.hostname
 
     def exec(
         self, command: str, requires_sudo=None
