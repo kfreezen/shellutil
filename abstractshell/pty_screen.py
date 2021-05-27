@@ -28,7 +28,10 @@ class TextBufferScreen(pyte.Screen):
             setattr(self, fn, partial(generic_fn, self))
 
     def debug(self, *args, **kwargs):
-        self.buffer("\r\n")
+        if self._debug:
+            print("debug function:", args, kwargs)
+
+        self.buffer.write("\r\n")
         pass
 
     def draw(self, text, *args, **kwargs):
