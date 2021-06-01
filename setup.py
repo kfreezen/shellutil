@@ -20,6 +20,14 @@ setup(
     ],
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
-    install_requires=["paramiko", "pexpect", "paramiko_expect", "ptyprocess", "pyte"],
+    install_requires=[
+        "paramiko",
+        "pexpect",
+        "paramiko_expect",
+        "ptyprocess",
+        "pyte",
+        "tqdm",
+        "questionary",
+    ],
     test_suite="tests",
 )
