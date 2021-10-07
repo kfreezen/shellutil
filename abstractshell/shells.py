@@ -260,7 +260,9 @@ class RemoteShell(Shell):
         return self.client.password
 
     @staticmethod
-    def establish_connection(remote_server, username, password, ssh_keyfile=None):
+    def establish_connection(
+        remote_server, username, password, ssh_keyfile=None, keepalive=None
+    ):
         is_ssh_valid = False
         r_client = None
 
@@ -268,7 +270,9 @@ class RemoteShell(Shell):
             if username is None or password is None:
                 return None
 
-            r_client = WrappedSSHClient(remote_server, username, password)
+            r_client = WrappedSSHClient(
+                remote_server, username, password, keepalive=keepalive
+            )
             if r_client.connect(remote_server, username, password):
                 is_ssh_valid = True
             else:

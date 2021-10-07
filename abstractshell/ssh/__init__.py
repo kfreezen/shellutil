@@ -25,12 +25,13 @@ class WrappedSSHClient:
     This is a wrapper that permits us to re-connect if an SSH connection becomes stale.
     """
 
-    def __init__(self, hostname=None, username=None, password=None):
+    def __init__(self, hostname=None, username=None, password=None, keepalive=None):
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.hostname = hostname
         self.username = username
         self.password = password
+        self.keepalive = keepalive
 
     def close(self):
         return self.client.close()
@@ -46,6 +47,11 @@ class WrappedSSHClient:
                 username=username,
                 password=password,
             )
+
+            if self.keepalive:
+                transport = self.client.get_transport()
+                transport.set_keepalive(self.keepalive)
+
             return True
         except Exception:
             self.client.close()
@@ -92,6 +98,11 @@ class WrappedSSHClient:
                         username=self.username,
                         password=self.password,
                     )
+
+                    if self.keepalive:
+                        transport = self.client.get_transport()
+                        transport.set_keepalive(self.keepalive)
+
                     logger.info("Successfully reconnected to SSH")
 
                 except SSHException as e:
